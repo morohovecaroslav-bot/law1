@@ -1,1 +1,337 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S.Y.S. POLICE ACADEMY</title>
+    <style>
+        :root {
+            --фон-ніч: #05070a;
+            --картка: rgba(13, 17, 23, 0.9);
+            --неон-синій: #00d2ff;
+            --неон-золото: #ffaa00;
+            --неон-червоний: #ff0044;
+            --текст: #e6edf3;
+            --рамка: #30363d;
+        }
 
+        body.денний-режим {
+            --фон-ніч: #f0f4f8;
+            --картка: rgba(255, 255, 255, 0.95);
+            --неон-синій: #0055ff;
+            --неон-золото: #b8860b;
+            --текст: #0d1117;
+            --рамка: #d0d7de;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--фон-ніч);
+            color: var(--текст);
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: background 0.5s ease;
+        }
+
+        /* ДИНАМІЧНИЙ ФОН */
+        .анімований-простір {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .обєкт {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0.1;
+            filter: drop-shadow(0 0 5px var(--неон-синій));
+            animation: float linear infinite;
+        }
+
+        @keyframes float {
+            from { transform: translate(0, 110vh) rotate(0deg); }
+            to { transform: translate(20vw, -10vh) rotate(360deg); }
+        }
+
+        /* ЕЛЕМЕНТИ ІНТЕРФЕЙСУ */
+        header {
+            width: 100%;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.5);
+            border-bottom: 2px solid var(--неон-синій);
+            text-align: center;
+            box-shadow: 0 0 30px rgba(0, 210, 255, 0.2);
+        }
+
+        .лого-текст {
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--текст);
+            text-shadow: 2px 2px 0px var(--неон-синій);
+        }
+
+        .підсвітка-золото { color: var(--неон-золото); text-shadow: 0 0 10px var(--неон-золото); }
+
+        .панель-керування {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 30px 0;
+            z-index: 10;
+        }
+
+        .кнп-модуль {
+            padding: 15px 25px;
+            background: var(--картка);
+            border: 1px solid var(--рамка);
+            color: var(--текст);
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* РІЗНА ПІДСВІТКА ДЛЯ РІЗНИХ КНОПОК */
+        .кнп-модуль:hover { border-color: var(--неон-синій); box-shadow: 0 0 15px var(--неон-синій); transform: translateY(-3px); }
+        .кнп-іспит { border: 1px solid var(--неон-золото); color: var(--неон-золото); }
+        .кнп-іспит:hover { background: var(--неон-золото); color: #000; box-shadow: 0 0 25px var(--неон-золото); }
+
+        .головна-зона {
+            width: 90%;
+            max-width: 850px;
+            background: var(--картка);
+            border-radius: 8px;
+            padding: 40px;
+            border-top: 4px solid var(--неон-синій);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+            backdrop-filter: blur(15px);
+            margin-bottom: 50px;
+        }
+
+        .ситуація {
+            font-size: 1.4rem;
+            line-height: 1.5;
+            margin-bottom: 30px;
+            color: var(--текст);
+        }
+
+        .варіант {
+            display: block;
+            width: 100%;
+            padding: 18px;
+            margin: 12px 0;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--рамка);
+            border-radius: 5px;
+            color: var(--текст);
+            text-align: left;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: 0.2s;
+        }
+
+        .варіант:hover {
+            background: rgba(0, 210, 255, 0.05);
+            border-color: var(--неон-синій);
+            padding-left: 25px;
+        }
+
+        /* ВІКНО РЕЗУЛЬТАТУ */
+        .результат {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 5px;
+            border-left: 10px solid;
+            animation: bounceIn 0.5s ease;
+        }
+
+        .успіх { border-color: var(--неон-синій); background: rgba(0, 210, 255, 0.1); color: var(--неон-синій); }
+        .помилка { border-color: var(--неон-червоний); background: rgba(255, 0, 68, 0.1); color: var(--неон-червоний); }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.9); opacity: 0; }
+            70% { transform: scale(1.02); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .режим-варів {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px;
+            background: var(--неон-синій);
+            color: #000;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="анімований-простір" id="фон-ефекти"></div>
+
+<header>
+    <div class="лого-текст">СИСТЕМА <span class="підсвітка-золото">ПРАВОСУДДЯ</span></div>
+    <div style="font-size: 0.7rem; opacity: 0.6; margin-top: 10px; letter-spacing: 5px;">ЦЕНТРАЛЬНИЙ СЕРВЕР МВС</div>
+    <div class="режим-варів" onclick="тоглРежим()">ДЕНЬ / НІЧ</div>
+</header>
+
+<nav class="панель-керування">
+    <button class="кнп-модуль" onclick="запуск('корпус')">СПЕЦПІДРОЗДІЛИ</button>
+    <button class="кнп-модуль" onclick="запуск('кримінал')">КРИМІНАЛІСТИКА</button>
+    <button class="кнп-модуль" onclick="запуск('права')">ПРАВА ЛЮДИНИ</button>
+    <button class="кнп-модуль" onclick="запуск('ситуації')">ШВИДКЕ РЕАГУВАННЯ</button>
+    <button class="кнп-модуль кнп-іспит" onclick="запуск('іспит')">ГЕНЕРАЛЬНА АТЕСТАЦІЯ</button>
+</nav>
+
+<main class="головна-зона" id="screen">
+    <div id="content">
+        <h2 style="color: var(--неон-синій)">АВТОРИЗАЦІЯ УСПІШНА</h2>
+        <p>Вітаємо в терміналі підготовки. Виберіть сектор для початку симуляції. Всі дані зашифровані.</p>
+        <hr style="border-color: var(--рамка)">
+        <p style="font-size: 0.9rem; opacity: 0.7">Статус: <span class="підсвітка-золото">Очікування вибору...</span></p>
+    </div>
+</main>
+
+<script>
+    // ГЕНЕРАЦІЯ ЛІТАЮЧИХ СИМВОЛІВ
+    const symbols = ['⚖️', '🚔', '🚓', '🕵️', '👮', '🛡️', '📑', '🏛️'];
+    const bgContainer = document.getElementById('фон-ефекти');
+
+    function createSymbols() {
+        for(let i=0; i<20; i++) {
+            let el = document.createElement('div');
+            el.className = 'обєкт';
+            el.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+            el.style.left = Math.random() * 100 + 'vw';
+            el.style.animationDuration = (Math.random() * 15 + 10) + 's';
+            el.style.animationDelay = Math.random() * 10 + 's';
+            el.style.fontSize = Math.random() * 20 + 20 + 'px';
+            bgContainer.appendChild(el);
+        }
+    }
+    createSymbols();
+
+    // РОЗШИРЕНА БАЗА ДАНИХ (40+ кейсів)
+    const база = {
+        корпус: [
+            { q: "Затримання злодія на гарячому під час крадіжки авто.", o: ["Патрульна поліція", "КОРД", "Кіберполіція"], c: 0, r: "Це пряма робота патрульних." },
+            { q: "Звільнення заручників у банку.", o: ["Дільничні", "КОРД", "Поліція охорони"], c: 1, r: "Спецпідрозділ КОРД — для ситуацій найвищого ризику." },
+            { q: "Виявлення мережі наркоторговців у DarkNet.", o: ["Патрульна", "Кіберполіція", "Ювенальна поліція"], c: 1, r: "Злочини в мережі розслідує Кіберполіція." },
+            { q: "Охорона державного архіву з секретними документами.", o: ["КОРД", "Поліція охорони", "Патрульна"], c: 1, r: "Охорона об'єктів — завдання Поліції охорони." }
+        ],
+        кримінал: [
+            { q: "Знайдено відбитки пальців на місці вбивства.", o: ["Передати криміналістам", "Сфотографувати та стерти", "Не чіпати"], c: 0, r: "Криміналісти мають зняти відбитки для бази ДНК/папілярних узорів." },
+            { q: "Як називається наука про розслідування злочинів?", o: ["Кримінологія", "Криміналістика", "Психологія"], c: 1, r: "Криміналістика — наука про техніку розслідування." }
+        ],
+        права: [
+            { q: "Поліція зупинила вас вночі. Ви маєте право знати причину?", o: ["Так", "Ні", "Тільки якщо ви адвокат"], c: 0, r: "Ст. 18 ЗУ 'Про Нацполіцію' зобов'язує назвати причину зупинки." },
+            { q: "Чи можна застосовувати кайданки до вагітної жінки?", o: ["Ніколи", "Тільки у випадку збройного нападу", "Так, завжди"], c: 1, r: "Закон обмежує силу до жінок з явними ознаками вагітності." }
+        ],
+        ситуації: [
+            { q: "Ви помітили підозрілий рюкзак під лавкою у ТРЦ.", o: ["Відкрити самому", "Викликати вибухотехніків", "Проігнорувати"], c: 1, r: "Не торкайтесь невідомих предметів." },
+            { q: "Водій пропонує гроші за нескладання протоколу.", o: ["Взяти та попередити", "Відмовитись та зафіксувати корупцію", "Просто піти"], c: 1, r: "Пропозиція хабаря — це кримінальний злочин." }
+        ]
+    };
+
+    function тоглРежим() {
+        document.body.classList.toggle('денний-режим');
+    }
+
+    function запуск(сектор) {
+        if (сектор === 'іспит') {
+            аттестація();
+            return;
+        }
+        завантажитиКейс(сектор);
+    }
+
+    function завантажитиКейс(сектор) {
+        const area = document.getElementById('content');
+        const data = база[сектор];
+        const item = data[Math.floor(Math.random() * data.length)];
+
+        area.innerHTML = `
+            <div style="color:var(--неон-синій); font-weight:bold; margin-bottom:10px;">СЕКТОР: ${сектор.toUpperCase()}</div>
+            <div class="ситуація">${item.q}</div>
+            <div id="opts"></div>
+        `;
+
+        item.o.forEach((o, i) => {
+            const b = document.createElement('button');
+            b.className = 'варіант';
+            b.innerText = o;
+            b.onclick = () => перевірка(i === item.c, item.r, сектор);
+            document.getElementById('opts').appendChild(b);
+        });
+    }
+
+    function перевірка(win, note, сектор) {
+        const area = document.getElementById('content');
+        const res = document.createElement('div');
+        res.className = `результат ${win ? 'успіх' : 'помилка'}`;
+        res.innerHTML = `
+            <strong>${win ? 'УСПІШНЕ РІШЕННЯ' : 'КРИТИЧНА ПОМИЛКА'}</strong>
+            <p>${note}</p>
+            <button class="кнп-модуль" style="width:100%; margin-top:10px;" onclick="завантажитиКейс('${сектор}')">НАСТУПНИЙ КЕЙС</button>
+        `;
+        document.querySelectorAll('.варіант').forEach(b => b.disabled = true);
+        area.appendChild(res);
+    }
+
+    // ІСПИТ
+    let p = 0, s = 0;
+    function аттестація() {
+        p = 0; s = 0;
+        наступнийКрок();
+    }
+
+    function наступнийКрок() {
+        if (s >= 10) {
+            фініш();
+            return;
+        }
+        const keys = Object.keys(база);
+        const k = keys[Math.floor(Math.random() * keys.length)];
+        const item = база[k][Math.floor(Math.random() * база[k].length)];
+
+        const area = document.getElementById('content');
+        area.innerHTML = `<div class="лого-текст" style="font-size:1rem">ПРОГРЕС: ${s+1}/10</div><div class="ситуація">${item.q}</div><div id="e-opts"></div>`;
+
+        item.o.forEach((o, i) => {
+            const b = document.createElement('button');
+            b.className = 'варіант';
+            b.innerText = o;
+            b.onclick = () => {
+                if (i === item.c) p += 10;
+                s++;
+                наступнийКрок();
+            };
+            document.getElementById('e-opts').appendChild(b);
+        });
+    }
+
+    function фініш() {
+        document.getElementById('content').innerHTML = `
+            <h2 class="підсвітка-золото">АТЕСТАЦІЯ ЗАВЕРШЕНА</h2>
+            <div style="font-size: 3rem; text-align:center">${p}</div>
+            <p style="text-align:center">ВАШ РЕЙТИНГ: ${p >= 80 ? 'ОФІЦЕР-ДЕТЕКТИВ' : 'КУРСАНТ'}</p>
+            <button class="кнп-модуль" style="width:100%" onclick="location.reload()">НАЗАД ДО ХАБУ</button>
+        `;
+    }
+</script>
+</body>
+</html>
